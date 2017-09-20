@@ -75,9 +75,19 @@ public class SteamVR_LaserPointer : MonoBehaviour
             PointerOut(this, e);
     }
 
+    private void OnEnable()
+    {
+        holder.SetActive(true);
+    }
+
+    private void OnDisable()
+    {
+        holder.SetActive(false);
+    }
+
 
     // Update is called once per frame
-	void Update ()
+    void Update ()
     {
         if (!isActive)
         {

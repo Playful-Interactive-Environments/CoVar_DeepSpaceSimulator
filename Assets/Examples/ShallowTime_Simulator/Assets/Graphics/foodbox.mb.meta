@@ -1,0 +1,152 @@
+fileFormatVersion: 2
+guid: 926bc592e4cba3c459edb3c38f49a1e2
+timeCreated: 1500453467
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: back
+    100002: bigsushi
+    100004: box
+    100006: //RootNode
+    100008: foodbox
+    100010: left
+    100012: rice
+    100014: smallsushi1
+    100016: smallsushi2
+    100018: smallsushi3
+    100020: smallsushi4
+    100022: smallsushi5
+    100024: stick1
+    100026: stick2
+    100028: tomatoe
+    400000: back
+    400002: bigsushi
+    400004: box
+    400006: //RootNode
+    400008: foodbox
+    400010: left
+    400012: rice
+    400014: smallsushi1
+    400016: smallsushi2
+    400018: smallsushi3
+    400020: smallsushi4
+    400022: smallsushi5
+    400024: stick1
+    400026: stick2
+    400028: tomatoe
+    2300000: bigsushi
+    2300002: box
+    2300004: rice
+    2300006: smallsushi1
+    2300008: smallsushi2
+    2300010: smallsushi3
+    2300012: smallsushi4
+    2300014: smallsushi5
+    2300016: stick1
+    2300018: stick2
+    2300020: tomatoe
+    3300000: bigsushi
+    3300002: box
+    3300004: rice
+    3300006: smallsushi1
+    3300008: smallsushi2
+    3300010: smallsushi3
+    3300012: smallsushi4
+    3300014: smallsushi5
+    3300016: stick1
+    3300018: stick2
+    3300020: tomatoe
+    4300000: box
+    4300002: bigsushi
+    4300004: smallsushi1
+    4300006: rice
+    4300008: tomatoe
+    4300010: stick1
+    4300012: stick2
+    4300014: smallsushi2
+    4300016: smallsushi3
+    4300018: smallsushi4
+    4300020: smallsushi5
+    6400000: bigsushi
+    6400002: box
+    6400004: rice
+    6400006: smallsushi1
+    6400008: smallsushi2
+    6400010: smallsushi3
+    6400012: smallsushi4
+    6400014: smallsushi5
+    6400016: stick1
+    6400018: stick2
+    6400020: tomatoe
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
