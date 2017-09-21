@@ -16,11 +16,15 @@ public class MenuScript : MonoBehaviour {
     public ProjectionManager projectionManager;
     public GameObject MainMenuItems;
     public GameObject SceneMenuItems;
+    public GameObject MediaTypeMenuItem;
+    public GameObject VideoMenuItem;
 
     public string[] sceneDir;
+    public Material[] videoTexture;
 
     public ControllerMenu activeController;
     private ProjectionSpace projectionSpace;
+    private MediaType mediaType;
 
     private Camera activeFloorProjectionCamera;
     private Camera activeWallProjectionCamera;
@@ -51,14 +55,18 @@ public class MenuScript : MonoBehaviour {
     private void OnEnable()
     {
         MainMenuItems.SetActive(true);
+        MediaTypeMenuItem.SetActive(false);
         SceneMenuItems.SetActive(false);
+        VideoMenuItem.SetActive(false);
     }
 
     public void SetProjectionSpace(ProjectionSpace projectionSpace)
     {
         this.projectionSpace = projectionSpace;
         MainMenuItems.SetActive(false);
-        SceneMenuItems.SetActive(true);
+        MediaTypeMenuItem.SetActive(true);
+        SceneMenuItems.SetActive(false);
+        VideoMenuItem.SetActive(false);
     }
 
     public void SetProjectionSpaceWall()
@@ -69,6 +77,25 @@ public class MenuScript : MonoBehaviour {
     public void SetProjectionSpaceFloor()
     {
         SetProjectionSpace(ProjectionSpace.floor);
+    }
+
+    public void SetMediaType(MediaType mediaType)
+    {
+        this.mediaType = mediaType;
+        MainMenuItems.SetActive(false);
+        MediaTypeMenuItem.SetActive(false);
+        SceneMenuItems.SetActive(mediaType == MediaType.SceneProjection);
+        VideoMenuItem.SetActive(mediaType == MediaType.Video);
+    }
+
+    public void SetMediaTypeUnityScene()
+    {
+        SetMediaType(MediaType.SceneProjection);
+    }
+
+    public void SetMediaTypeVideo()
+    {
+        SetMediaType(MediaType.Video);
     }
 
     public void LoadScene(string sceneName)
@@ -97,6 +124,8 @@ public class MenuScript : MonoBehaviour {
             }
         }
 
+        UnloadUnusedScenes();
+
         foreach (var item in scene.GetRootGameObjects())
         {
             var cams = item.GetComponentsInChildren<Camera>(true);
@@ -110,10 +139,6 @@ public class MenuScript : MonoBehaviour {
                         if (cam.targetTexture.Equals(projectionManager.wallProjectionCamera.mainTexture))
                         {
                             activeWallProjectionCamera = setActiveProjection(activeWallProjectionCamera, cam);
-                            if (activeWallScene.name != null && activeWallScene.name != activeFloorScene.name)
-                            {
-                                SceneManager.UnloadSceneAsync(activeWallScene);
-                            }
                             activeWallScene = scene;
                         }
                         break;
@@ -121,10 +146,6 @@ public class MenuScript : MonoBehaviour {
                         if (cam.targetTexture.Equals(projectionManager.floorProjectionCamera.mainTexture))
                         {
                             activeFloorProjectionCamera = setActiveProjection(activeFloorProjectionCamera, cam);
-                            if (activeFloorScene.name != null && activeWallScene.name != activeFloorScene.name)
-                            {
-                                SceneManager.UnloadSceneAsync(activeFloorScene);
-                            }
                             activeFloorScene = scene;
                         }
                         break;
@@ -134,7 +155,31 @@ public class MenuScript : MonoBehaviour {
             }
         }
 
+        SyncDisplayType();
         ToggleMenu();
+    }
+
+    private void UnloadUnusedScenes()
+    {
+        switch (projectionSpace)
+        {
+            case ProjectionSpace.wall:
+                if (activeWallScene.name != null && activeWallScene.name != activeFloorScene.name)
+                {
+                    SceneManager.UnloadSceneAsync(activeWallScene);
+                }
+                activeWallScene = new Scene();
+                break;
+            case ProjectionSpace.floor:
+                if (activeFloorScene.name != null && activeWallScene.name != activeFloorScene.name)
+                {
+                        SceneManager.UnloadSceneAsync(activeFloorScene);
+                }
+                activeFloorScene = new Scene();
+                break;
+            default:
+                break;
+        }
     }
 
     private Camera setActiveProjection(Camera activeProjectionCamera, Camera newProjectionCamera)
@@ -147,5 +192,55 @@ public class MenuScript : MonoBehaviour {
     public void ToggleMenu()
     {
         activeController.toggleMenu();
+    }
+
+    public void LoadVideo(int videoId)
+    {
+        SyncDisplayType();
+        UnloadUnusedScenes();
+
+        switch (projectionSpace)
+        {
+            case ProjectionSpace.none:
+                break;
+            case ProjectionSpace.wall:
+                projectionManager.wallVideoPlane.GetComponent<Renderer>().material = videoTexture[videoId];
+                projectionManager.wallVideoPlane.PlayVideo();
+                break;
+            case ProjectionSpace.floor:
+                projectionManager.floorVideoPlane.GetComponent<Renderer>().material = videoTexture[videoId];
+                projectionManager.floorVideoPlane.PlayVideo();
+                break;
+            default:
+                break;
+        }
+
+        ToggleMenu();
+    }
+
+    public void LoadEmpty()
+    {
+        SetMediaType(MediaType.None);
+        SyncDisplayType();
+        UnloadUnusedScenes();
+        ToggleMenu();
+    }
+
+    private void SyncDisplayType()
+    {
+        switch (projectionSpace)
+        {
+            case ProjectionSpace.none:
+                break;
+            case ProjectionSpace.wall:
+                projectionManager.wallDisplayType = mediaType;
+                break;
+            case ProjectionSpace.floor:
+                projectionManager.floorDisplayType = mediaType;
+                break;
+            default:
+                break;
+        }
+        projectionManager.SyncDisplayTypes();
     }
 }
