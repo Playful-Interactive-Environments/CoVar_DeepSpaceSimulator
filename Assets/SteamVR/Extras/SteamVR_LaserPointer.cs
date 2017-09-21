@@ -77,12 +77,14 @@ public class SteamVR_LaserPointer : MonoBehaviour
 
     private void OnEnable()
     {
-        holder.SetActive(true);
+        if (holder) 
+            holder.SetActive(true);
     }
 
     private void OnDisable()
     {
-        holder.SetActive(false);
+        if (holder)
+            holder.SetActive(false);
     }
 
 
