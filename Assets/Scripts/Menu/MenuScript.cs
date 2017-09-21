@@ -25,7 +25,9 @@ public class MenuScript : MonoBehaviour {
     private Camera activeFloorProjectionCamera;
     private Camera activeWallProjectionCamera;
 
-    private AssetBundle myLoadedAssetBundle;
+    private Scene activeFloorScene;
+    private Scene activeWallScene;
+
     private List<string> scenePaths;
 
     void Start () {
@@ -41,8 +43,8 @@ public class MenuScript : MonoBehaviour {
             }
         }
     }
-	
-	void Update () {
+
+    void Update () {
 		
 	}
 
@@ -72,46 +74,6 @@ public class MenuScript : MonoBehaviour {
     public void LoadScene(string sceneName)
     {
         StartCoroutine(AsyncLoadScene(sceneName));
-        //string scenePath = scenePaths.First(s => s.EndsWith(sceneName+".unity"));
-
-        //Scene scene = SceneManager.GetSceneByName(sceneName);
-        //if (!scene.isLoaded)
-        //{
-        //    SceneManager.LoadScene(scenePath, LoadSceneMode.Additive);
-        //    scene = SceneManager.GetSceneByName(sceneName);
-        //    foreach (var item in scene.GetRootGameObjects())
-        //    {
-        //        var cams = item.GetComponentsInChildren<Camera>(true);
-        //        foreach (var cam in cams)
-        //        {
-        //            Debug.LogWarning("SceneCam: " + cam);
-        //            cam.gameObject.SetActive(false);
-        //        }
-        //    }
-        //}
-
-        //foreach (var item in scene.GetRootGameObjects())
-        //{
-        //    var cams = item.GetComponentsInChildren<Camera>(true);
-        //    foreach (var cam in cams)
-        //    {
-        //        switch (projectionSpace)
-        //        {
-        //            case ProjectionSpace.wall:
-        //                if (cam.targetTexture == projectionManager.wallProjectionCamera)
-        //                    activeWallProjectionCamera = setActiveProjection(activeWallProjectionCamera, cam);
-        //                break;
-        //            case ProjectionSpace.floor:
-        //                if (cam.targetTexture == projectionManager.floorProjectionCamera)
-        //                    activeFloorProjectionCamera = setActiveProjection(activeFloorProjectionCamera, cam);
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //    }
-        //}
-
-        ToggleMenu();
     }
 
     IEnumerator AsyncLoadScene(string sceneName)
@@ -121,24 +83,19 @@ public class MenuScript : MonoBehaviour {
         Scene scene = SceneManager.GetSceneByName(sceneName);
         if (!scene.isLoaded)
         {
-            //DOTO Why Why Why? Verareitung scheint nach load zu stoppen!!!
+            //yield controll must be visibible until loading finished
+            //load scene: scene must added to build window
             yield return SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
             scene = SceneManager.GetSceneByName(sceneName);
-            Debug.LogWarning("SceneCam: " + scene.isLoaded);
-            Debug.LogWarning("SceneCam: " + scene.name);
             foreach (var item in scene.GetRootGameObjects())
             {
                 var cams = item.GetComponentsInChildren<Camera>(true);
-                Debug.LogWarning("SceneCam: " + cams.Length);
                 foreach (var cam in cams)
                 {
-                    Debug.LogWarning("SceneCam: " + cam);
                     cam.gameObject.SetActive(false);
                 }
             }
         }
-
-        Debug.LogWarning("AsyncLoadScene Part2 start");
 
         foreach (var item in scene.GetRootGameObjects())
         {
@@ -151,17 +108,33 @@ public class MenuScript : MonoBehaviour {
                 {
                     case ProjectionSpace.wall:
                         if (cam.targetTexture.Equals(projectionManager.wallProjectionCamera.mainTexture))
+                        {
                             activeWallProjectionCamera = setActiveProjection(activeWallProjectionCamera, cam);
+                            if (activeWallScene.name != null && activeWallScene.name != activeFloorScene.name)
+                            {
+                                SceneManager.UnloadSceneAsync(activeWallScene);
+                            }
+                            activeWallScene = scene;
+                        }
                         break;
                     case ProjectionSpace.floor:
                         if (cam.targetTexture.Equals(projectionManager.floorProjectionCamera.mainTexture))
+                        {
                             activeFloorProjectionCamera = setActiveProjection(activeFloorProjectionCamera, cam);
+                            if (activeFloorScene.name != null && activeWallScene.name != activeFloorScene.name)
+                            {
+                                SceneManager.UnloadSceneAsync(activeFloorScene);
+                            }
+                            activeFloorScene = scene;
+                        }
                         break;
                     default:
                         break;
                 }
             }
         }
+
+        ToggleMenu();
     }
 
     private Camera setActiveProjection(Camera activeProjectionCamera, Camera newProjectionCamera)

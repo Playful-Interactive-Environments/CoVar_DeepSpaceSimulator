@@ -1,6 +1,6 @@
 //Maya ASCII 2016 scene
 //Name: TeleportPoint.ma
-//Last modified: Wed, Sep 20, 2017 12:13:26 PM
+//Last modified: Wed, Sep 20, 2017 07:03:12 PM
 //Codeset: 1252
 requires maya "2016";
 currentUnit -l centimeter -a degree -t film;
@@ -80,10 +80,102 @@ createNode mesh -n "pTorusShape1" -p "pTorus1";
 	setAttr ".vir" yes;
 	setAttr ".vif" yes;
 	setAttr ".uvst[0].uvsn" -type "string" "map1";
+	setAttr -s 44 ".uvst[0].uvsp[0:43]" -type "float2" 0 1 0.1 1 0.2 1 0.30000001
+		 1 0.40000001 1 0.5 1 0.60000002 1 0.70000005 1 0.80000007 1 0.9000001 1 1.000000119209
+		 1 0 0.66666663 0.1 0.66666663 0.2 0.66666663 0.30000001 0.66666663 0.40000001 0.66666663
+		 0.5 0.66666663 0.60000002 0.66666663 0.70000005 0.66666663 0.80000007 0.66666663
+		 0.9000001 0.66666663 1.000000119209 0.66666663 0 0.33333328 0.1 0.33333328 0.2 0.33333328
+		 0.30000001 0.33333328 0.40000001 0.33333328 0.5 0.33333328 0.60000002 0.33333328
+		 0.70000005 0.33333328 0.80000007 0.33333328 0.9000001 0.33333328 1.000000119209 0.33333328
+		 0 -5.9604645e-008 0.1 -5.9604645e-008 0.2 -5.9604645e-008 0.30000001 -5.9604645e-008
+		 0.40000001 -5.9604645e-008 0.5 -5.9604645e-008 0.60000002 -5.9604645e-008 0.70000005
+		 -5.9604645e-008 0.80000007 -5.9604645e-008 0.9000001 -5.9604645e-008 1.000000119209
+		 -5.9604645e-008;
 	setAttr ".cuvs" -type "string" "map1";
 	setAttr ".dcc" -type "string" "Ambient+Diffuse";
 	setAttr ".covm[0]"  0 1 1;
 	setAttr ".cdvm[0]"  0 1 1;
+	setAttr -s 30 ".vt[0:29]"  0.40450853 0 -0.29389271 0.15450847 0 -0.47552836
+		 -0.15450858 0 -0.4755283 -0.40450859 0 -0.29389262 -0.50000006 0 2.9802322e-008 -0.40450853 0 0.29389268
+		 -0.15450849 0 0.4755283 0.15450852 0 0.47552827 0.4045085 0 0.29389262 0.5 0 0 1.011271358 0.43301269 -0.73473179
+		 0.38627118 0.43301269 -1.18882084 -0.38627145 0.43301269 -1.18882072 -1.011271477 0.43301269 -0.73473155
+		 -1.25000012 0.43301269 7.4505806e-008 -1.011271358 0.43301269 0.73473167 -0.38627121 0.43301269 1.18882072
+		 0.3862713 0.43301269 1.18882072 1.011271238 0.43301269 0.73473155 1.25 0.43301269 0
+		 1.011271358 -0.43301275 -0.73473179 0.38627118 -0.43301275 -1.18882084 -0.38627145 -0.43301275 -1.18882072
+		 -1.011271477 -0.43301275 -0.73473155 -1.25000012 -0.43301275 7.4505806e-008 -1.011271358 -0.43301275 0.73473167
+		 -0.38627121 -0.43301275 1.18882072 0.3862713 -0.43301275 1.18882072 1.011271238 -0.43301275 0.73473155
+		 1.25 -0.43301275 0;
+	setAttr -s 60 ".ed[0:59]"  0 1 0 1 2 0 2 3 0 3 4 0 4 5 0 5 6 0 6 7 0
+		 7 8 0 8 9 0 9 0 0 10 11 0 11 12 0 12 13 0 13 14 0 14 15 0 15 16 0 16 17 0 17 18 0
+		 18 19 0 19 10 0 20 21 0 21 22 0 22 23 0 23 24 0 24 25 0 25 26 0 26 27 0 27 28 0 28 29 0
+		 29 20 0 0 10 0 1 11 0 2 12 0 3 13 0 4 14 0 5 15 0 6 16 0 7 17 0 8 18 0 9 19 0 10 20 0
+		 11 21 0 12 22 0 13 23 0 14 24 0 15 25 0 16 26 0 17 27 0 18 28 0 19 29 0 20 0 0 21 1 0
+		 22 2 0 23 3 0 24 4 0 25 5 0 26 6 0 27 7 0 28 8 0 29 9 0;
+	setAttr -s 30 -ch 120 ".fc[0:29]" -type "polyFaces" 
+		f 4 -1 30 10 -32
+		mu 0 4 1 0 11 12
+		f 4 -2 31 11 -33
+		mu 0 4 2 1 12 13
+		f 4 -3 32 12 -34
+		mu 0 4 3 2 13 14
+		f 4 -4 33 13 -35
+		mu 0 4 4 3 14 15
+		f 4 -5 34 14 -36
+		mu 0 4 5 4 15 16
+		f 4 -6 35 15 -37
+		mu 0 4 6 5 16 17
+		f 4 -7 36 16 -38
+		mu 0 4 7 6 17 18
+		f 4 -8 37 17 -39
+		mu 0 4 8 7 18 19
+		f 4 -9 38 18 -40
+		mu 0 4 9 8 19 20
+		f 4 -10 39 19 -31
+		mu 0 4 10 9 20 21
+		f 4 -11 40 20 -42
+		mu 0 4 12 11 22 23
+		f 4 -12 41 21 -43
+		mu 0 4 13 12 23 24
+		f 4 -13 42 22 -44
+		mu 0 4 14 13 24 25
+		f 4 -14 43 23 -45
+		mu 0 4 15 14 25 26
+		f 4 -15 44 24 -46
+		mu 0 4 16 15 26 27
+		f 4 -16 45 25 -47
+		mu 0 4 17 16 27 28
+		f 4 -17 46 26 -48
+		mu 0 4 18 17 28 29
+		f 4 -18 47 27 -49
+		mu 0 4 19 18 29 30
+		f 4 -19 48 28 -50
+		mu 0 4 20 19 30 31
+		f 4 -20 49 29 -41
+		mu 0 4 21 20 31 32
+		f 4 -21 50 0 -52
+		mu 0 4 23 22 33 34
+		f 4 -22 51 1 -53
+		mu 0 4 24 23 34 35
+		f 4 -23 52 2 -54
+		mu 0 4 25 24 35 36
+		f 4 -24 53 3 -55
+		mu 0 4 26 25 36 37
+		f 4 -25 54 4 -56
+		mu 0 4 27 26 37 38
+		f 4 -26 55 5 -57
+		mu 0 4 28 27 38 39
+		f 4 -27 56 6 -58
+		mu 0 4 29 28 39 40
+		f 4 -28 57 7 -59
+		mu 0 4 30 29 40 41
+		f 4 -29 58 8 -60
+		mu 0 4 31 30 41 42
+		f 4 -30 59 9 -51
+		mu 0 4 32 31 42 43;
+	setAttr ".cd" -type "dataPolyComponent" Index_Data Edge 0 ;
+	setAttr ".cvd" -type "dataPolyComponent" Index_Data Vertex 0 ;
+	setAttr ".pd[0]" -type "dataPolyComponent" Index_Data UV 0 ;
+	setAttr ".hfd" -type "dataPolyComponent" Index_Data Face 0 ;
 createNode lightLinker -s -n "lightLinker1";
 	rename -uid "5DC1D64D-441F-177A-A239-58A1C416A0F7";
 	setAttr -s 2 ".lnk";
@@ -97,10 +189,6 @@ createNode renderLayerManager -n "renderLayerManager";
 createNode renderLayer -n "defaultRenderLayer";
 	rename -uid "4451F6D5-4058-5CB8-9937-9EB5A87EC591";
 	setAttr ".g" yes;
-createNode polyTorus -n "polyTorus1";
-	rename -uid "10AC1913-4AA7-C511-BC61-79A4FCF8C516";
-	setAttr ".sa" 10;
-	setAttr ".sh" 3;
 createNode script -n "uiConfigurationScriptNode";
 	rename -uid "AE2C3C1B-4389-DC8F-235F-F8A33E1F1456";
 	setAttr ".b" -type "string" (
@@ -196,7 +284,6 @@ select -ne :defaultResolution;
 select -ne :hardwareRenderGlobals;
 	setAttr ".ctrs" 256;
 	setAttr ".btrs" 512;
-connectAttr "polyTorus1.out" "pTorusShape1.i";
 relationship "link" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";
 relationship "link" ":lightLinker1" ":initialParticleSE.message" ":defaultLightSet.message";
 relationship "shadowLink" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";
