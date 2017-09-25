@@ -18,7 +18,7 @@ public class ControllerMenu : MonoBehaviour {
 	
 	void Update () {
         var device = SteamVR_Controller.Input((int)obj.index);
-        if (device.GetPressDown(SteamVR_Controller.ButtonMask.ApplicationMenu))
+        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))//.ApplicationMenu))
         {
             toggleMenu();
         }

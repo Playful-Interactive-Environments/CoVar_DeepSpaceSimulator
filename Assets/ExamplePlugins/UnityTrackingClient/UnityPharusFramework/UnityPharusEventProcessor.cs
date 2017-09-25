@@ -29,9 +29,14 @@ namespace UnityPharus
 		#endregion
 		
 		private UnityPharusListener m_listener;
-		
-		#region constructor
-		public UnityPharusEventProcessor(UnityPharusListener theUnityPharusListener)
+
+        public UnityPharusListener PharusListener
+        {
+            get { return m_listener; }
+        }
+
+        #region constructor
+        public UnityPharusEventProcessor(UnityPharusListener theUnityPharusListener)
 		{
 			m_listener = theUnityPharusListener;
 		}

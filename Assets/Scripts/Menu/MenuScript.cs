@@ -3,26 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using UnityPharus;
+using UnityTuio;
+using PharusTransmission;
 
 public enum ProjectionSpace
 {
     none,
     wall,
-    floor
+    floor,
+    both
+}
+
+public enum MenuItem
+{
+    None,
+    Main,
+    Projection,
+    Lighting,
+    Media,
+    Scene,
+    Video
 }
 
 public class MenuScript : MonoBehaviour {
 
     public ProjectionManager projectionManager;
     public GameObject MainMenuItems;
+    public GameObject ProjectionMenuItems;
     public GameObject SceneMenuItems;
     public GameObject MediaTypeMenuItem;
     public GameObject VideoMenuItem;
+    public GameObject LightingMenuItem;
 
-    public string[] sceneDir;
     public Material[] videoTexture;
 
     public ControllerMenu activeController;
+
+    public bool simulateTracking = false;
+    //public UnityPharusManager pharus;
+    //public UnityTuioManager tuio;
+
+    public SimulatePharus headPos;
+
+    public GameObject[] lightSetup;
+
     private ProjectionSpace projectionSpace;
     private MediaType mediaType;
 
@@ -32,41 +57,38 @@ public class MenuScript : MonoBehaviour {
     private Scene activeFloorScene;
     private Scene activeWallScene;
 
-    private List<string> scenePaths;
+    private TrackRecord trackRecord;
 
     void Start () {
-        scenePaths = new List<string>();
-
-        foreach (var path in sceneDir)
-        {
-            string[] sp = System.IO.Directory.GetFiles(path);
-            foreach (var s in sp)
-            {
-                if (s.EndsWith(".unity"))
-                    scenePaths.Add(s.Replace("\\", "/"));
-            }
-        }
     }
 
     void Update () {
-		
-	}
+    }
+
+    private void setActiveMenuItem(MenuItem mi)
+    {
+        MainMenuItems.SetActive(mi == MenuItem.Main);
+        ProjectionMenuItems.SetActive(mi == MenuItem.Projection);
+        LightingMenuItem.SetActive(mi == MenuItem.Lighting);
+        MediaTypeMenuItem.SetActive(mi == MenuItem.Media);
+        SceneMenuItems.SetActive(mi == MenuItem.Scene);
+        VideoMenuItem.SetActive(mi == MenuItem.Video);
+    }
 
     private void OnEnable()
     {
-        MainMenuItems.SetActive(true);
-        MediaTypeMenuItem.SetActive(false);
-        SceneMenuItems.SetActive(false);
-        VideoMenuItem.SetActive(false);
+        setActiveMenuItem(MenuItem.Main);
+    }
+
+    public void ShowProjectionMenu()
+    {
+        setActiveMenuItem(MenuItem.Projection);
     }
 
     public void SetProjectionSpace(ProjectionSpace projectionSpace)
     {
         this.projectionSpace = projectionSpace;
-        MainMenuItems.SetActive(false);
-        MediaTypeMenuItem.SetActive(true);
-        SceneMenuItems.SetActive(false);
-        VideoMenuItem.SetActive(false);
+        setActiveMenuItem(MenuItem.Media);
     }
 
     public void SetProjectionSpaceWall()
@@ -79,13 +101,29 @@ public class MenuScript : MonoBehaviour {
         SetProjectionSpace(ProjectionSpace.floor);
     }
 
+    public void SetProjectionSpaceBoth()
+    {
+        SetProjectionSpace(ProjectionSpace.both);
+    }
+
     public void SetMediaType(MediaType mediaType)
     {
         this.mediaType = mediaType;
-        MainMenuItems.SetActive(false);
-        MediaTypeMenuItem.SetActive(false);
-        SceneMenuItems.SetActive(mediaType == MediaType.SceneProjection);
-        VideoMenuItem.SetActive(mediaType == MediaType.Video);
+
+        switch (mediaType)
+        {
+            case MediaType.None:
+                setActiveMenuItem(MenuItem.None);
+                break;
+            case MediaType.SceneProjection:
+                setActiveMenuItem(MenuItem.Scene);
+                break;
+            case MediaType.Video:
+                setActiveMenuItem(MenuItem.Video);
+                break;
+            default:
+                break;
+        }
     }
 
     public void SetMediaTypeUnityScene()
@@ -105,14 +143,12 @@ public class MenuScript : MonoBehaviour {
 
     IEnumerator AsyncLoadScene(string sceneName)
     {
-        string scenePath = scenePaths.First(s => s.EndsWith(sceneName + ".unity"));
-
         Scene scene = SceneManager.GetSceneByName(sceneName);
         if (!scene.isLoaded)
         {
             //yield controll must be visibible until loading finished
             //load scene: scene must added to build window
-            yield return SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
+            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             scene = SceneManager.GetSceneByName(sceneName);
             foreach (var item in scene.GetRootGameObjects())
             {
@@ -124,7 +160,7 @@ public class MenuScript : MonoBehaviour {
             }
         }
 
-        UnloadUnusedScenes();
+        UnloadUnusedScenes(projectionSpace);
 
         foreach (var item in scene.GetRootGameObjects())
         {
@@ -133,25 +169,7 @@ public class MenuScript : MonoBehaviour {
             {
                 if (!cam.targetTexture) continue;
 
-                switch (projectionSpace)
-                {
-                    case ProjectionSpace.wall:
-                        if (cam.targetTexture.Equals(projectionManager.wallProjectionCamera.mainTexture))
-                        {
-                            activeWallProjectionCamera = setActiveProjection(activeWallProjectionCamera, cam);
-                            activeWallScene = scene;
-                        }
-                        break;
-                    case ProjectionSpace.floor:
-                        if (cam.targetTexture.Equals(projectionManager.floorProjectionCamera.mainTexture))
-                        {
-                            activeFloorProjectionCamera = setActiveProjection(activeFloorProjectionCamera, cam);
-                            activeFloorScene = scene;
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                SetActiveProjectionCamera(projectionSpace, cam, scene);
             }
         }
 
@@ -159,7 +177,34 @@ public class MenuScript : MonoBehaviour {
         ToggleMenu();
     }
 
-    private void UnloadUnusedScenes()
+    private void SetActiveProjectionCamera(ProjectionSpace projectionSpace, Camera cam, Scene scene)
+    {
+        switch (projectionSpace)
+        {
+            case ProjectionSpace.wall:
+                if (cam.targetTexture.Equals(projectionManager.wallProjectionCamera.mainTexture))
+                {
+                    activeWallProjectionCamera = setActiveProjection(activeWallProjectionCamera, cam);
+                    activeWallScene = scene;
+                }
+                break;
+            case ProjectionSpace.floor:
+                if (cam.targetTexture.Equals(projectionManager.floorProjectionCamera.mainTexture))
+                {
+                    activeFloorProjectionCamera = setActiveProjection(activeFloorProjectionCamera, cam);
+                    activeFloorScene = scene;
+                }
+                break;
+            case ProjectionSpace.both:
+                SetActiveProjectionCamera(ProjectionSpace.wall, cam, scene);
+                SetActiveProjectionCamera(ProjectionSpace.floor, cam, scene);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void UnloadUnusedScenes(ProjectionSpace projectionSpace)
     {
         switch (projectionSpace)
         {
@@ -176,6 +221,10 @@ public class MenuScript : MonoBehaviour {
                         SceneManager.UnloadSceneAsync(activeFloorScene);
                 }
                 activeFloorScene = new Scene();
+                break;
+            case ProjectionSpace.both:
+                UnloadUnusedScenes(ProjectionSpace.wall);
+                UnloadUnusedScenes(ProjectionSpace.floor);
                 break;
             default:
                 break;
@@ -196,8 +245,13 @@ public class MenuScript : MonoBehaviour {
 
     public void LoadVideo(int videoId)
     {
+        LoadVideo(videoId, projectionSpace);
+    }
+
+    public void LoadVideo(int videoId, ProjectionSpace projectionSpace)
+    {
         SyncDisplayType();
-        UnloadUnusedScenes();
+        UnloadUnusedScenes(projectionSpace);
 
         switch (projectionSpace)
         {
@@ -211,6 +265,10 @@ public class MenuScript : MonoBehaviour {
                 projectionManager.floorVideoPlane.GetComponent<Renderer>().material = videoTexture[videoId];
                 projectionManager.floorVideoPlane.PlayVideo();
                 break;
+            case ProjectionSpace.both:
+                LoadVideo(videoId, ProjectionSpace.wall);
+                LoadVideo(videoId, ProjectionSpace.floor);
+                break;
             default:
                 break;
         }
@@ -222,7 +280,7 @@ public class MenuScript : MonoBehaviour {
     {
         SetMediaType(MediaType.None);
         SyncDisplayType();
-        UnloadUnusedScenes();
+        UnloadUnusedScenes(projectionSpace);
         ToggleMenu();
     }
 
@@ -238,9 +296,34 @@ public class MenuScript : MonoBehaviour {
             case ProjectionSpace.floor:
                 projectionManager.floorDisplayType = mediaType;
                 break;
+            case ProjectionSpace.both:
+                projectionManager.wallDisplayType = mediaType;
+                projectionManager.floorDisplayType = mediaType;
+                break;
             default:
                 break;
         }
         projectionManager.SyncDisplayTypes();
+    }
+
+    public void ToggleSimulateTrackingPoint()
+    {
+        simulateTracking = !simulateTracking;
+        headPos.enabled = simulateTracking;
+        ToggleMenu();
+    }
+
+    public void ShowLightingMenu()
+    {
+        setActiveMenuItem(MenuItem.Lighting);
+    }
+
+    public void SetLight(int LightIndex)
+    {
+        for (int i = 0; i < lightSetup.Length; i++)
+        {
+            lightSetup[i].SetActive(i == LightIndex);
+        }
+        ToggleMenu();
     }
 }

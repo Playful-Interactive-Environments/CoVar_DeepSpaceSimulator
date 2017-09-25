@@ -54,8 +54,13 @@ namespace UnityTuio
 
 		private UnityTuioListener m_listener;
 
-		#region constructor
-		public UnityTuioEventProcessor(UnityTuioListener theUnityTuioListener)
+        public UnityTuioListener TuioListener
+        {
+            get { return m_listener; }
+        }
+
+        #region constructor
+        public UnityTuioEventProcessor(UnityTuioListener theUnityTuioListener)
 		{
 			m_listener = theUnityTuioListener;
 		}

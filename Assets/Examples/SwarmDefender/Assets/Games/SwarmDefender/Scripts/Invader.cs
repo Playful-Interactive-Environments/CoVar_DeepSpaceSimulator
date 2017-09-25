@@ -169,7 +169,10 @@ namespace SwarmDefender
 		
 		private void GetDamage(GameObject theSender)
 		{
-			m_health -= theSender.GetComponent<Bullet>().m_damage;
+            Debug.LogWarning("GetDamage: " + theSender);
+            Debug.LogWarning("GetDamage: " + theSender.GetComponent<Bullet>());
+
+            m_health -= theSender.GetComponent<Bullet>().m_damage;
 			if(m_health <= 0)
 			{
 				SpawnExplosions(false);
