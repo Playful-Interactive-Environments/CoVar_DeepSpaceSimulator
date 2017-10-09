@@ -32,7 +32,6 @@ public class ControllerMenu : MonoBehaviour {
         GetComponent<SteamVR_TrackedController>().enabled = menuEnabled;
         GetComponent<SteamVR_LaserPointer>().enabled = menuEnabled;
         GetComponent<LaserPointer>().enabled = !menuEnabled;
-        GetComponent<ControllerGrabObject>().enabled = !menuEnabled;
 
         if (menuEnabled)
         {

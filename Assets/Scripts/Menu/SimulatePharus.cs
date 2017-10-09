@@ -8,7 +8,7 @@ using UnityTuio;
 public class SimulatePharus : MonoBehaviour {
 
     public UnityPharusManager pharus;
-    public UnityTuioManager tuio;
+    //public UnityTuioManager tuio;
 
     public Transform offsetPosition;
 
