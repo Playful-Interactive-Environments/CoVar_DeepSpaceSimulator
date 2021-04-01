@@ -1,19 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Video;
 
-[RequireComponent (typeof(AudioSource))]
+[RequireComponent(typeof(AudioSource))]
 public class VideoController : MonoBehaviour
 {
     private AudioSource audio;
-    private MovieTexture video;
 
-    public MovieTexture VideoTexture {
+    private VideoPlayer videoPlayer;
+
+    public VideoPlayer VideoPlayer
+    {
         get
         {
-            if (video == null)
-                video = GetComponent<Renderer>().material.mainTexture as MovieTexture;
-            return video;
+            if (this.videoPlayer == null)
+            {
+                this.videoPlayer = this.GetComponent<VideoPlayer>();
+            }
+
+            return this.videoPlayer;
         }
     }
 
@@ -28,7 +32,17 @@ public class VideoController : MonoBehaviour
     }
 
 
-    void Start () {
+    void Start()
+    {
+        var videoPlayer = gameObject.AddComponent<UnityEngine.Video.VideoPlayer>();
+        var audioSource = gameObject.AddComponent<AudioSource>();
+
+        videoPlayer.playOnAwake = false;
+        videoPlayer.renderMode = UnityEngine.Video.VideoRenderMode.MaterialOverride;
+        videoPlayer.targetMaterialRenderer = GetComponent<Renderer>();
+        videoPlayer.targetMaterialProperty = "_MainTex";
+        videoPlayer.audioOutputMode = UnityEngine.Video.VideoAudioOutputMode.AudioSource;
+        videoPlayer.SetTargetAudioSource(0, audioSource);
     }
 
     private void OnEnable()
@@ -38,78 +52,45 @@ public class VideoController : MonoBehaviour
 
     private void OnDisable()
     {
-        StopAudio();
-        if (!IsVideoPlaying(VideoTexture))
-            RestartVideo(VideoTexture);            
+        if (!IsVideoPlaying(this.videoPlayer))
+            RestartVideo(this.videoPlayer);
     }
 
-    void Update () {
-		
-	}
+    void Update()
+    {
+    }
 
     public void PlayVideo()
     {
-        StopAudio();
-        MovieTexture movie = VideoTexture;
-        if (!IsVideoPlaying(movie))
+        VideoPlayer player = this.videoPlayer;
+        if (!IsVideoPlaying(player))
         {
-            RestartVideo(movie);
-            PlayAudio();
+            RestartVideo(player);
         }
-        else if (!movie.isPlaying)
+        else if (!player.isPlaying)
         {
-            movie.Stop();
-            PlayAudio();
+            player.Stop();
         }
-        movie.Play();
+        player.Play();
     }
 
-    public void PlayAudio()
+    private void RestartVideo(VideoPlayer player)
     {
-        var vCont = IsVideoPlaying(VideoTexture);
-        if (vCont)
-        {
-            vCont.Audio.Stop();
-            vCont.Audio.clip = null;
-        }
-
-        Audio.clip = VideoTexture.audioClip;
-        Audio.Play();
+        if (player.isPlaying)
+            player.Stop();
     }
 
-    private void RestartVideo(MovieTexture movie)
+
+    private VideoController IsVideoPlaying(VideoPlayer player)
     {
-        if (movie.isPlaying)
-            movie.Stop();
-    }
-
-    private void StopAudio()
-    {
-        if (Audio.clip != null)
-        {
-            Audio.Stop();
-
-            var vController = IsVideoPlaying(video);
-            if (vController != null && vController.Audio.clip == null)
-            {
-                vController.PlayAudio();
-            }
-
-            Audio.clip = null;
-        }
-        video = null;
-    }
-
-    private VideoController IsVideoPlaying(MovieTexture actMovie)
-    {
-        var vidoeList = GameObject.FindObjectsOfType<VideoController>();
-        foreach (var video in vidoeList)
+        var videoList = GameObject.FindObjectsOfType<VideoController>();
+        foreach (var video in videoList)
         {
             if (video == this) continue;
             if (!video.isActiveAndEnabled) continue;
 
-            MovieTexture movie = video.VideoTexture;
-            if (movie == actMovie)
+            VideoPlayer movie = this.videoPlayer;
+            if (movie == player)
             {
                 return video;
             }

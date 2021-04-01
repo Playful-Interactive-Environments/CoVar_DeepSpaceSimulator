@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using Valve.VR.Extras;
 
 public class ControllerMenu : MonoBehaviour {
     SteamVR_TrackedObject obj;
@@ -17,11 +18,12 @@ public class ControllerMenu : MonoBehaviour {
 	}
 	
 	void Update () {
-        var device = SteamVR_Controller.Input((int)obj.index);
-        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))//.ApplicationMenu))
-        {
-            toggleMenu();
-        }
+        //TODO:Replace with new system
+        //var device = SteamVR_Controller.Input((int)obj.index);
+        //if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))//.ApplicationMenu))
+        //{
+        //    toggleMenu();
+        //}
 	}
 
     public void toggleMenu()
@@ -29,7 +31,7 @@ public class ControllerMenu : MonoBehaviour {
         menuEnabled = !menuEnabled;
         menueHolder.gameObject.SetActive(menuEnabled);
         GetComponent<VRUIInput>().enabled = menuEnabled;
-        GetComponent<SteamVR_TrackedController>().enabled = menuEnabled;
+        //TODO:Replace GetComponent<SteamVR_TrackedController>().enabled = menuEnabled;
         GetComponent<SteamVR_LaserPointer>().enabled = menuEnabled;
         GetComponent<LaserPointer>().enabled = !menuEnabled;
 

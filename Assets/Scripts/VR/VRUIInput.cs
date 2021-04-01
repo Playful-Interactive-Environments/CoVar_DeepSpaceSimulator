@@ -1,12 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Valve.VR;
+using Valve.VR.Extras;
 
 [RequireComponent(typeof(SteamVR_LaserPointer))]
 public class VRUIInput : MonoBehaviour
 {
+    //private SteamVR_LaserPointer laserPointer;
+    //private SteamVR_TrackedController trackedController;
     private SteamVR_LaserPointer laserPointer;
-    private SteamVR_TrackedController trackedController;
+
+    public SteamVR_Action_Boolean TriggerOnOff;
+
+    public SteamVR_Input_Sources HandType;
 
     private void OnEnable()
     {
@@ -16,16 +23,18 @@ public class VRUIInput : MonoBehaviour
         laserPointer.PointerOut -= HandlePointerOut;
         laserPointer.PointerOut += HandlePointerOut;
 
-        trackedController = GetComponent<SteamVR_TrackedController>();
-        if (trackedController == null)
-        {
-            trackedController = GetComponentInParent<SteamVR_TrackedController>();
-        }
-        trackedController.TriggerClicked -= HandleTriggerClicked;
-        trackedController.TriggerClicked += HandleTriggerClicked;
+        //trackedController = GetComponent<SteamVR_TrackedController>();
+        //if (trackedController == null)
+        //{
+        //    trackedController = GetComponentInParent<SteamVR_TrackedController>();
+        //}
+        //trackedController.TriggerClicked -= HandleTriggerClicked;
+        //trackedController.TriggerClicked += HandleTriggerClicked;
+
+        this.TriggerOnOff.AddOnStateDownListener(this.TriggerDown, this.HandType);
     }
 
-    private void HandleTriggerClicked(object sender, ClickedEventArgs e)
+    public void TriggerDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
         Debug.Log("HandleTriggerClicked", EventSystem.current.currentSelectedGameObject);
         if (EventSystem.current.currentSelectedGameObject != null)
@@ -33,6 +42,15 @@ public class VRUIInput : MonoBehaviour
             ExecuteEvents.Execute(EventSystem.current.currentSelectedGameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         }
     }
+
+    //private void HandleTriggerClicked(object sender, ClickedEventArgs e)
+    //{
+    //    Debug.Log("HandleTriggerClicked", EventSystem.current.currentSelectedGameObject);
+    //    if (EventSystem.current.currentSelectedGameObject != null)
+    //    {
+    //        ExecuteEvents.Execute(EventSystem.current.currentSelectedGameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+    //    }
+    //}
 
     private void HandlePointerIn(object sender, PointerEventArgs e)
     {
