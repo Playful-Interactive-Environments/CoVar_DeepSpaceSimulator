@@ -2,6 +2,7 @@
 using UnityEngine.Video;
 
 [RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(VideoPlayer))]
 public class VideoController : MonoBehaviour
 {
     private AudioSource audio;
@@ -34,14 +35,14 @@ public class VideoController : MonoBehaviour
 
     void Start()
     {
-        var videoPlayer = gameObject.AddComponent<UnityEngine.Video.VideoPlayer>();
-        var audioSource = gameObject.AddComponent<AudioSource>();
+        var videoPlayer = GetComponent<VideoPlayer>();
+        var audioSource = GetComponent<AudioSource>();
 
         videoPlayer.playOnAwake = false;
-        videoPlayer.renderMode = UnityEngine.Video.VideoRenderMode.MaterialOverride;
+        videoPlayer.renderMode = VideoRenderMode.MaterialOverride;
         videoPlayer.targetMaterialRenderer = GetComponent<Renderer>();
         videoPlayer.targetMaterialProperty = "_MainTex";
-        videoPlayer.audioOutputMode = UnityEngine.Video.VideoAudioOutputMode.AudioSource;
+        videoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
         videoPlayer.SetTargetAudioSource(0, audioSource);
     }
 
@@ -52,26 +53,35 @@ public class VideoController : MonoBehaviour
 
     private void OnDisable()
     {
-        if (!IsVideoPlaying(this.videoPlayer))
-            RestartVideo(this.videoPlayer);
+        if (!IsVideoPlaying(this.VideoPlayer))
+            RestartVideo(this.VideoPlayer);
     }
 
     void Update()
     {
     }
 
+    public void SetVideoClip(VideoClip clip)
+    {
+        if (this.VideoPlayer.isPlaying)
+        {
+            this.VideoPlayer.Stop();
+        }
+
+        this.VideoPlayer.clip = clip;
+    }
+
     public void PlayVideo()
     {
-        VideoPlayer player = this.videoPlayer;
-        if (!IsVideoPlaying(player))
+        if (!IsVideoPlaying(this.VideoPlayer))
         {
-            RestartVideo(player);
+            RestartVideo(this.VideoPlayer);
         }
-        else if (!player.isPlaying)
+        else if (!this.VideoPlayer.isPlaying)
         {
-            player.Stop();
+            this.VideoPlayer.Stop();
         }
-        player.Play();
+        this.VideoPlayer.Play();
     }
 
     private void RestartVideo(VideoPlayer player)

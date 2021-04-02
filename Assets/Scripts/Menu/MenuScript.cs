@@ -7,6 +7,8 @@ using UnityPharus;
 using UnityTuio;
 using PharusTransmission;
 
+using UnityEngine.Video;
+
 public enum ProjectionSpace
 {
     none,
@@ -36,7 +38,7 @@ public class MenuScript : MonoBehaviour {
     public GameObject VideoMenuItem;
     public GameObject LightingMenuItem;
 
-    public Material[] videoTexture;
+    public VideoClip[] videoClips;
 
     public ControllerMenu activeController;
 
@@ -250,6 +252,11 @@ public class MenuScript : MonoBehaviour {
 
     public void LoadVideo(int videoId, ProjectionSpace projectionSpace)
     {
+        if (this.videoClips[videoId] == null)
+        {
+            return;
+        }
+
         SyncDisplayType();
         UnloadUnusedScenes(projectionSpace);
 
@@ -258,11 +265,11 @@ public class MenuScript : MonoBehaviour {
             case ProjectionSpace.none:
                 break;
             case ProjectionSpace.wall:
-                projectionManager.wallVideoPlane.GetComponent<Renderer>().material = videoTexture[videoId];
+                projectionManager.wallVideoPlane.SetVideoClip(this.videoClips[videoId]);
                 projectionManager.wallVideoPlane.PlayVideo();
                 break;
             case ProjectionSpace.floor:
-                projectionManager.floorVideoPlane.GetComponent<Renderer>().material = videoTexture[videoId];
+                projectionManager.floorVideoPlane.SetVideoClip(this.videoClips[videoId]);
                 projectionManager.floorVideoPlane.PlayVideo();
                 break;
             case ProjectionSpace.both:

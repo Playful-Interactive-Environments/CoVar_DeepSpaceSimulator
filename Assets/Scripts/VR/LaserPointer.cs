@@ -1,90 +1,88 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
 using Valve.VR;
 
 public class LaserPointer : MonoBehaviour
 {
+    public GameObject laserPrefab;
+    private GameObject laser;
+    private Transform laserTransform;
+    private Vector3 hitPoint;
+    public Transform cameraRigTransform;
+    public GameObject teleportReticlePrefab;
+    private GameObject reticle;
+    private Transform teleportReticleTransform;
+    public Transform headTransform;
+    public Vector3 teleportReticleOffset;
+    public LayerMask teleportMask;
+    private bool shouldTeleport;
 
-    //public GameObject laserPrefab;
-    //private SteamVR_Input_Source trackedObj;
-    //private GameObject laser;
-    //private Transform laserTransform;
-    //private Vector3 hitPoint;
-    //public Transform cameraRigTransform;
-    //public GameObject teleportReticlePrefab;
-    //private GameObject reticle;
-    //private Transform teleportReticleTransform;
-    //public Transform headTransform;
-    //public Vector3 teleportReticleOffset;
-    //public LayerMask teleportMask;
-    //private bool shouldTeleport;
+    public SteamVR_Action_Boolean ClickLaserOnOff;
+    public SteamVR_Input_Sources HandType;
 
-    //private SteamVR_Controller.Device Controller
-    //{
-    //    get { return SteamVR_Controller.Input((int)trackedObj.index); }
-    //}
 
-    //void Start()
-    //{
-    //    laser = Instantiate(laserPrefab);
-    //    laserTransform = laser.transform;
-    //    if (teleportReticlePrefab) {
-    //        reticle = Instantiate(teleportReticlePrefab);
-    //        teleportReticleTransform = reticle.transform;
-    //    }
-    //}
+    void Start()
+    {
+        laser = Instantiate(laserPrefab);
+        laserTransform = laser.transform;
+        if (teleportReticlePrefab)
+        {
+            reticle = Instantiate(teleportReticlePrefab);
+            teleportReticleTransform = reticle.transform;
+        }
 
-    //void Awake()
-    //{
-    //    trackedObj = GetComponent<SteamVR_TrackedObject>();
-    //}
+        this.ClickLaserOnOff.AddOnUpdateListener(OnUpdated, HandType);
+        this.ClickLaserOnOff.AddOnStateUpListener(this.OnStateUp, HandType);
+    }
 
-    //private void ShowLaser(RaycastHit hit)
-    //{
-    //    laser.SetActive(true);
-    //    laserTransform.position = Vector3.Lerp(trackedObj.transform.position, hitPoint, .5f);
-    //    laserTransform.LookAt(hitPoint);
-    //    laserTransform.localScale = new Vector3(laserTransform.localScale.x, laserTransform.localScale.y,
-    //        hit.distance);
-    //}
+    private void OnUpdated(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource, bool newState)
+    {
+        if (fromAction.state)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(this.transform.position, transform.forward, out hit, 100, teleportMask))
+            {
+                hitPoint = hit.point;
+                ShowLaser(hit);
+                if (reticle)
+                {
+                    reticle.SetActive(true);
+                    teleportReticleTransform.position = hitPoint + teleportReticleOffset;
+                }
+                shouldTeleport = true;
+            }
+        }
+        else
+        {
+            laser.SetActive(false);
+            if (reticle) reticle.SetActive(false);
+        }
+    }
 
-    //private void Teleport()
-    //{
-    //    shouldTeleport = false;
-    //    if (reticle) reticle.SetActive(false);
-    //    Vector3 difference = cameraRigTransform.position - headTransform.position;
-    //    difference.y = 0;
-    //    //hitPoint.y = cameraRigTransform.position.y;
-    //    cameraRigTransform.position = hitPoint + difference;
-    //}
+    public void OnStateUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        if (fromAction.stateUp)
+        {
+            Teleport();
+        }
+    }
 
-    //void Update()
-    //{
-    //    if (Controller.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
-    //    {
-    //        RaycastHit hit;
-    //        if (Physics.Raycast(trackedObj.transform.position, transform.forward, out hit, 100, teleportMask))
-    //        {
-    //            hitPoint = hit.point;
-    //            ShowLaser(hit);
-    //            if (reticle) {
-    //                reticle.SetActive(true);
-    //                teleportReticleTransform.position = hitPoint + teleportReticleOffset;
-    //            }
-    //            shouldTeleport = true;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        laser.SetActive(false);
-    //        if (reticle) reticle.SetActive(false);
-    //    }
+    private void ShowLaser(RaycastHit hit)
+    {
+        laser.SetActive(true);
+        laserTransform.position = Vector3.Lerp(this.transform.position, hitPoint, .5f);
 
-    //    if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad) && shouldTeleport)
-    //    {
-    //        Teleport();
-    //    }
-    //}
+        laserTransform.LookAt(hitPoint);
+        laserTransform.localScale = new Vector3(laserTransform.localScale.x, laserTransform.localScale.y,
+            hit.distance);
+    }
+
+    private void Teleport()
+    {
+        shouldTeleport = false;
+        if (reticle) reticle.SetActive(false);
+        Vector3 difference = cameraRigTransform.position - headTransform.position;
+        difference.y = 0;
+        //hitPoint.y = cameraRigTransform.position.y;
+        cameraRigTransform.position = hitPoint + difference;
+    }
 }

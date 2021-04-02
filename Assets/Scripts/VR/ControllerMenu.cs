@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Valve.VR;
 using Valve.VR.Extras;
 
@@ -9,22 +7,21 @@ public class ControllerMenu : MonoBehaviour {
     public MenuScript menueHolder;
     public bool menuEnabled;
 
-	void Start () {
+    public SteamVR_Action_Boolean MenuOnOff;
+
+    public SteamVR_Input_Sources HandType;
+
+    void Start () {
         obj = GetComponent<SteamVR_TrackedObject>();
         menuEnabled = true;
         toggleMenu();
-//        menuEnabled = false;
-//        menueHolder.SetActive(menuEnabled);
-	}
-	
-	void Update () {
-        //TODO:Replace with new system
-        //var device = SteamVR_Controller.Input((int)obj.index);
-        //if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))//.ApplicationMenu))
-        //{
-        //    toggleMenu();
-        //}
-	}
+        this.MenuOnOff.AddOnStateDownListener(this.OnStateDown, HandType);
+    }
+
+    private void OnStateDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        this.toggleMenu();
+    }
 
     public void toggleMenu()
     {
