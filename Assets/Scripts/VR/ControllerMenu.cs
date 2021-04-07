@@ -21,6 +21,7 @@ public class ControllerMenu : MonoBehaviour {
     private void OnStateDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
         this.toggleMenu();
+        Debug.Log("Toggle Menu");
     }
 
     public void toggleMenu()

@@ -22,16 +22,16 @@ public class LaserPointer : MonoBehaviour
 
     void Start()
     {
-        laser = Instantiate(laserPrefab);
-        laserTransform = laser.transform;
-        if (teleportReticlePrefab)
+        this.laser = Instantiate(this.laserPrefab);
+        this.laserTransform = this.laser.transform;
+        if (this.teleportReticlePrefab)
         {
-            reticle = Instantiate(teleportReticlePrefab);
-            teleportReticleTransform = reticle.transform;
+            this.reticle = Instantiate(this.teleportReticlePrefab);
+            this.teleportReticleTransform = this.reticle.transform;
         }
 
-        this.ClickLaserOnOff.AddOnUpdateListener(OnUpdated, HandType);
-        this.ClickLaserOnOff.AddOnStateUpListener(this.OnStateUp, HandType);
+        this.ClickLaserOnOff.AddOnUpdateListener(this.OnUpdated, this.HandType);
+        this.ClickLaserOnOff.AddOnStateUpListener(this.OnStateUp, this.HandType);
     }
 
     private void OnUpdated(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource, bool newState)
@@ -39,50 +39,57 @@ public class LaserPointer : MonoBehaviour
         if (fromAction.state)
         {
             RaycastHit hit;
-            if (Physics.Raycast(this.transform.position, transform.forward, out hit, 100, teleportMask))
+            if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 100, this.teleportMask))
             {
-                hitPoint = hit.point;
-                ShowLaser(hit);
-                if (reticle)
+                this.hitPoint = hit.point;
+                this.ShowLaser(hit);
+                if (this.reticle)
                 {
-                    reticle.SetActive(true);
-                    teleportReticleTransform.position = hitPoint + teleportReticleOffset;
+                    this.reticle.SetActive(true);
+                    this.teleportReticleTransform.position = this.hitPoint + this.teleportReticleOffset;
                 }
-                shouldTeleport = true;
+                this.shouldTeleport = true;
             }
         }
         else
         {
-            laser.SetActive(false);
-            if (reticle) reticle.SetActive(false);
+            this.laser.SetActive(false);
+            if (this.reticle)
+            {
+                this.reticle.SetActive(false);
+            }
         }
     }
 
     public void OnStateUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        if (fromAction.stateUp)
-        {
-            Teleport();
-        }
+        this.Teleport();
+
+        Debug.Log("Teleport");
     }
 
     private void ShowLaser(RaycastHit hit)
     {
-        laser.SetActive(true);
-        laserTransform.position = Vector3.Lerp(this.transform.position, hitPoint, .5f);
+        this.laser.SetActive(true);
+        this.laserTransform.position = Vector3.Lerp(this.transform.position, this.hitPoint, .5f);
 
-        laserTransform.LookAt(hitPoint);
-        laserTransform.localScale = new Vector3(laserTransform.localScale.x, laserTransform.localScale.y,
+        this.laserTransform.LookAt(this.hitPoint);
+        this.laserTransform.localScale = new Vector3(this.laserTransform.localScale.x, this.laserTransform.localScale.y,
             hit.distance);
     }
 
     private void Teleport()
     {
-        shouldTeleport = false;
-        if (reticle) reticle.SetActive(false);
-        Vector3 difference = cameraRigTransform.position - headTransform.position;
-        difference.y = 0;
+        this.shouldTeleport = false;
+        if (this.reticle)
+        {
+            this.reticle.SetActive(false);
+        }
+
+        //Vector3 difference = this.cameraRigTransform.position - this.headTransform.position;
+        //difference.y = 0;
         //hitPoint.y = cameraRigTransform.position.y;
-        cameraRigTransform.position = hitPoint + difference;
+        //this.cameraRigTransform.position = this.hitPoint + difference;
+        this.cameraRigTransform.position = this.hitPoint;
     }
 }
