@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.deepspacesimulator.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "E:\\Projekte\\Georgi\\Deep Space Simulator\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "B:\\Projects\\PieLab\\Deep Space VR Simulator\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "DeepSpaceSimulator [Testing]"
